@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>VacancyViewerHTML</title>
+    <meta id="root" about="${pageContext.request.contextPath}">
+    <link rel="stylesheet" href="webjars/bootstrap/4.6.1/css/bootstrap.min.css">
+    <script src="webjars/jquery/3.6.0/jquery.min.js"></script>
+    <script src="webjars/bootstrap/4.6.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+</head>
+<body onload="load();">
+<div class="container">
+
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Ошибка!</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-danger" role="alert" id="error-text">
+                        Предупреждение...
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="showModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Описание вакансии</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="existId">Id</label>
+                            <input type="number" class="form-control" id="existId" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="existName">Название вакансии</label>
+                            <input type="text" class="form-control" id="existName" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="existSalary">Уровень зарплаты</label>
+                            <input type="number" class="form-control" id="existSalary" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="existExperience">Опыт</label>
+                            <input type="text" class="form-control" id="existExperience" readonly>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="existCity">Город</label>
+                            <input type="text" class="form-control" id="existCity" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-info" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="createModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Создание вакансии</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="newName">Название вакансии</label>
+                            <input type="text" class="form-control" id="newName">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="newSalary">Уровень зарплаты</label>
+                            <input type="number" class="form-control" id="newSalary">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="newExperience">Опыт</label>
+                            <input type="text" class="form-control" id="newExperience">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-12">
+                            <label for="newCity">Город</label>
+                            <input type="text" class="form-control" id="newCity">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="processCreate('/vacancy')">Создать</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form style="background-color: #E9ECEF; padding: 20px; border-radius: 10px; display: block" id="searchForm">
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="existExperience">Поиск по id:</label>
+                <input type="number" class="form-control" id="searchId" required>
+            </div>
+        </div>
+        <div class="form-group col-md-4">
+            <button type="button" onclick="searchIdClick()" class="btn btn-info">Найти</button>
+        </div>
+    </form>
+
+<br>
+    <table id="tableOfVacancies" class="table">
+        <thead class="thead-dark">
+        <tr>
+            <th>Id</th>
+            <th>Название вакансии</th>
+            <th>Уровень зарплаты</th>
+            <th>Опыт</th>
+            <th>Город</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <br>
+    <button style="margin-bottom: 15px" type="button" onclick="clickCreate()" class="btn btn-info">Создать</button>
+</div>
+</body>
+</html>
