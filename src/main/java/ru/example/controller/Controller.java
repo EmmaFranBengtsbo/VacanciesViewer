@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.example.dto.Vacancies;
 import ru.example.dto.VacancyDTO;
+import ru.example.mapper.VacancyMapper;
 import ru.example.model.Vacancy;
 import ru.example.service.VacancyService;
 import ru.example.util.exception.BadRequestException;
@@ -24,9 +25,11 @@ public class Controller {
 
     private final Logger log = LoggerFactory.getLogger(getClass());
     private final VacancyService service;
+    private final VacancyMapper mapper;
 
-    public Controller(VacancyService service) {
+    public Controller(VacancyService service, VacancyMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping(value = "/{id}")
@@ -43,8 +46,7 @@ public class Controller {
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Vacancy> put(@Valid @RequestBody VacancyDTO to) {
         log.info("put vacancy");
-        ModelMapper modelMapper = new ModelMapper();
-        Vacancy vacancy = modelMapper.map(to, Vacancy.class);
+        Vacancy vacancy = mapper.toEntity(to);
         if (!service.save(vacancy)) {
             throw new BadRequestException("Bad request");
         }

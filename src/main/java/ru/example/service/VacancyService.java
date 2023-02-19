@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.example.dto.Vacancies;
 import ru.example.dto.VacancyDTO;
+import ru.example.mapper.VacancyMapper;
 import ru.example.model.Vacancy;
 import ru.example.repository.VacancyRepository;
 
@@ -13,16 +14,19 @@ import java.util.stream.Collectors;
 @Service
 public class VacancyService {
 
-    VacancyRepository repository;
+    private final VacancyRepository repository;
 
-    public VacancyService(VacancyRepository repository) {
+    private final VacancyMapper mapper;
+
+    public VacancyService(VacancyRepository repository, VacancyMapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
+
     public VacancyDTO findById(int id) {
         Vacancy vacancy = repository.findById(id);
         if (vacancy != null) {
-            ModelMapper modelMapper = new ModelMapper();
-            return  modelMapper.map(vacancy, VacancyDTO.class);
+            return  mapper.toDto(vacancy);
         } else {
             return null;
         }
@@ -33,9 +37,8 @@ public class VacancyService {
         if (listOfVacancies.isEmpty()) {
             return null;
         } else {
-            ModelMapper modelMapper = new ModelMapper();
             List<VacancyDTO> dtos = listOfVacancies.stream()
-                    .map(vacancy -> modelMapper.map(vacancy, VacancyDTO.class))
+                    .map(mapper::toDto)
                     .collect(Collectors.toList());
             return new Vacancies(dtos);
         }
