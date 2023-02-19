@@ -1,13 +1,14 @@
 package ru.example.service;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import ru.example.dto.Vacancies;
 import ru.example.dto.VacancyDTO;
 import ru.example.model.Vacancy;
 import ru.example.repository.VacancyRepository;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class VacancyService {
@@ -18,9 +19,10 @@ public class VacancyService {
         this.repository = repository;
     }
     public VacancyDTO findById(int id) {
-        Vacancy v = repository.findById(id);
-        if (v != null) {
-            return new VacancyDTO(v.getId(),v.getName(),v.getSalary(),v.getExperience(),v.getCity());
+        Vacancy vacancy = repository.findById(id);
+        if (vacancy != null) {
+            ModelMapper modelMapper = new ModelMapper();
+            return  modelMapper.map(vacancy, VacancyDTO.class);
         } else {
             return null;
         }
@@ -31,10 +33,10 @@ public class VacancyService {
         if (listOfVacancies.isEmpty()) {
             return null;
         } else {
-            List<VacancyDTO> dtos = new ArrayList<>();
-            for (Vacancy v : listOfVacancies) {
-                dtos.add(new VacancyDTO(v.getId(),v.getName(),v.getSalary(),v.getExperience(),v.getCity()));
-            }
+            ModelMapper modelMapper = new ModelMapper();
+            List<VacancyDTO> dtos = listOfVacancies.stream()
+                    .map(vacancy -> modelMapper.map(vacancy, VacancyDTO.class))
+                    .collect(Collectors.toList());
             return new Vacancies(dtos);
         }
     }

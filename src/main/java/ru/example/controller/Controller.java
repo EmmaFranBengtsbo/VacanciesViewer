@@ -1,5 +1,6 @@
 package ru.example.controller;
 
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -42,14 +43,14 @@ public class Controller {
     @PostMapping(consumes = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<Vacancy> put(@Valid @RequestBody VacancyDTO to) {
         log.info("put vacancy");
-        Vacancy vacancy = new Vacancy(to.getName(), to.getSalary(), to.getExperience(), to.getCity());
+        ModelMapper modelMapper = new ModelMapper();
+        Vacancy vacancy = modelMapper.map(to, Vacancy.class);
         if (!service.save(vacancy)) {
             throw new BadRequestException("Bad request");
         }
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path("/vacancy" + "/{id}")
                 .buildAndExpand(vacancy.getId()).toUri();
-
         return ResponseEntity.created(uriOfNewResource).body(vacancy);
     }
 
